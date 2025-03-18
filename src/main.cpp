@@ -1,18 +1,19 @@
-#include <Arduino.h>
-
-// put function declarations here:
-int myFunction(int, int);
+#include "gps_driver.h"
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+    gps_init();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-}
+    gps_update();
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+    Serial.print("\r🌍 Lat: ");
+    Serial.print(gps_get_latitude());
+    Serial.print(" | Lon: ");
+    Serial.print(gps_get_longitude());
+    Serial.print(" | 🏔 Alt: ");
+    Serial.print(gps_get_altitude());
+    Serial.print("m    ");
+
+    delay(100); // 10Hz Update-Rate
 }
