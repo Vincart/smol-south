@@ -5,8 +5,10 @@
 // Structure example to receive data
 // Must match the sender structure
 typedef struct struct_message {
-    char telemetry[3];
     int message_counter;
+    char latitude[15];
+    char longitude[15];
+    char altitude[10];
 } struct_message;
 
 // Create a struct_message called myData
@@ -26,17 +28,11 @@ void readMacAddress(){
 // callback function that will be executed when data is received
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
     memcpy(&myData, incomingData, sizeof(myData));
-    Serial.print("Bytes received: ");
-    Serial.println(len);
-    Serial.print("Latitude ");
-    Serial.println(myData.telemetry[0]);
-    Serial.print("Longitude ");
-    Serial.println(myData.telemetry[1]);
-    Serial.print("Altitude ");
-    Serial.println(myData.telemetry[2]);
-    Serial.print("Counter ");
-    Serial.println(myData.message_counter);
-    Serial.println("---------------------");
+    Serial.printf("📍 Lat: %s | 📍 Lon: %s | 🗻 Alt: %s | 🔢 Cnt: %d\n",
+                  myData.latitude,
+                  myData.longitude,
+                  myData.altitude,
+                  myData.message_counter);
 }
 
 void setup() {
