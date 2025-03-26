@@ -1,8 +1,19 @@
 #include "gps_driver.h"
 #include <esp_now.h>
 #include <WiFi.h>
+#include <Wire.h>
+#include <Adafruit_BMP085.h>
+
+//Connection Baro
+//SDA	A4
+//SCL	A5
+
+#define MEAN_HUBLAND_SL_ALTITUDE 275 //Calibration Altitude for SL pressure
 
 int counter = 0;
+
+int initial_sea_l_press = -1;
+int initial_baro_altitude = -1;
 
 // Receiver MAC Address
 uint8_t broadcastAddress[] = {0x9c, 0x9c, 0x1f, 0xc4, 0xc4, 0x94};
@@ -19,7 +30,27 @@ struct_message myData;
 
 esp_now_peer_info_t peerInfo;
 
-// callback when data is sent
+//Baro ->
+
+void setup() {
+    Serial.begin(9600);
+
+}
+
+void loop() {
+    Serial.print("Temperatur = ");
+    Serial.print(bmp.readTemperature());
+    Serial.println(" *C");
+
+    Serial.print("Luftdruck = ");
+    Serial.print(bmp.readPressure());
+    Serial.println(" Pa");
+
+    Serial.println();
+    delay(2000);
+}
+
+// ESP-NOW: callback when data is sent
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
     if(status != ESP_NOW_SEND_SUCCESS) Serial.println("Delivery Fail");
 }
@@ -49,18 +80,30 @@ void setup() {
         return;
     }
 
+    //GPS
     gps_init();
+
+    // Baro init
+    if (!bmp.begin()) {
+        Serial.println("Sensor not found... Retrying");
+        delay(500);
+        while (1) {}
+    }
+    initial_sea_l_press = readSealevelPressure(HUBLAND_SL_ALTITUDE);
+    initial_baro_altitude = readAltitude(initial_sea_l_press);
 }
 
 void loop() {
     gps_update();
-
+    int baro_altitude = readAltitude(initial_sea_l_press);
     Serial.print("\r🌍 Lat: ");
     Serial.print(gps_get_latitude());
     Serial.print(" | Lon: ");
     Serial.print(gps_get_longitude());
     Serial.print(" | 🏔 Alt: ");
     Serial.print(gps_get_altitude());
+    Serial.print("m    BaroDiff: ");
+    Serial.print(baro_altitude - initial_baro_altitude);
     Serial.print("m    ");
 
     // Set values to send
