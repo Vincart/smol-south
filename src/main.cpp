@@ -9,6 +9,7 @@ typedef struct struct_message {
     char latitude[15];
     char longitude[15];
     char altitude[10];
+    float baro_alt;
 } struct_message;
 
 // Create a struct_message called myData
@@ -28,11 +29,12 @@ void readMacAddress(){
 // callback function that will be executed when data is received
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
     memcpy(&myData, incomingData, sizeof(myData));
-    Serial.printf("📍 Lat: %s | 📍 Lon: %s | 🗻 Alt: %s | 🔢 Cnt: %d\n",
+    Serial.printf("📍 Lat: %s | 📍 Lon: %s | 🗻 Alt: %s | 🔢 Cnt: %d | Baro_Alt: %f \n",
                   myData.latitude,
                   myData.longitude,
                   myData.altitude,
-                  myData.message_counter);
+                  myData.message_counter,
+                  myData.baro_alt);
 }
 
 void setup() {
