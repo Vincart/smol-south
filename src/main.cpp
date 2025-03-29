@@ -20,7 +20,7 @@ int initial_sea_l_press = -1;
 float initial_baro_altitude = -1.0;
 
 // Receiver MAC Address
-uint8_t broadcastAddress[] = {0x9c, 0x9c, 0x1f, 0xc4, 0xc4, 0x94};
+uint8_t broadcastAddress[] = {0x9c, 0x9c, 0x1f, 0xc6, 0x7a, 0x48};
 
 typedef struct struct_message {
     int message_counter;
